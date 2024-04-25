@@ -18,7 +18,8 @@ class _InstructionPageState extends State<InstructionPage> {
   Recipe recipe = Recipe({});
 
   Future<void> fetchRandomRecipes() async {
-    const String apiKey = '91656d4b1aa54efc824aaf5ba4192025';
+    //const String apiKey = '91656d4b1aa54efc824aaf5ba4192025';
+    const String apiKey = '560efc17aa5a4eca95183945809e1f6a';
     const String apiUrl = 'https://api.spoonacular.com/recipes/random';
     const int number = 1; // Number of random recipes to retrieve
 
@@ -69,7 +70,7 @@ class _InstructionPageState extends State<InstructionPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Curry',
+                    recipe.getTitle(),
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -79,8 +80,8 @@ class _InstructionPageState extends State<InstructionPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _TimeWidget(icon: Icons.access_time, time: '15 min'),
-                      _TimeWidget(icon: Icons.local_dining, time: '30 min'),
+                      _TimeWidget(icon: Icons.access_time, time: recipe.getPreparationMin()),
+                      _TimeWidget(icon: Icons.local_dining, time: recipe.getCookingMin()),
                     ],
                   ),
                   SizedBox(height: 10),

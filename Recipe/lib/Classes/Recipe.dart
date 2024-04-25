@@ -8,6 +8,9 @@ class Recipe {
   String imageURL = ''; // Initialize with an empty String
   List<List<String>> ingredients = []; // Initialize with an empty List
   List<String> stepsForRecipe = []; // Initialize with an empty List
+  String title = "";
+  String preparationMin = "";
+  String cookingMin = "";
 
   //Constructor
   Recipe(Map<String, dynamic>? data){
@@ -17,6 +20,15 @@ class Recipe {
       try {
         this.data = data;
         imageURL = data['recipes'][0]['image'] ?? '';
+        title = data['recipes'][0]['title'];
+        preparationMin = data['recipes'][0]['preparationMinutes'].toString();
+        cookingMin = data['recipes'][0]['cookingMinutes'].toString();
+        if (preparationMin == "-1"){
+          preparationMin = "10";
+        }
+        if (cookingMin == "-1"){
+          cookingMin = "30";
+        }
         setIngredients(data);
         setSteps(data);
       } catch (e) {
@@ -74,7 +86,16 @@ class Recipe {
   String getImageUrl(){
     return this.imageURL;
   }
+  String getTitle(){
+    return this.title;
+  }
 
+  String getPreparationMin(){
+    return this.preparationMin;
+  }
+  String getCookingMin(){
+    return this.cookingMin;
+  }
 
 }
 
