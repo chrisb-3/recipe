@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'pages/instruction_page.dart';
 import 'pages/shoppingList.dart';
+//import 'package:provider/provider.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -40,19 +42,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     if (_selectedIndex == 0) {
       // Navigate to WeeklyOverviewPage when the Weekly Overview button is tapped
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MyHomePage(title: "Weekly Overview")),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => MyHomePage(title: "Weekly Overview")),
+      // );
     } else if (_selectedIndex == 1) {
-      // Navigate to ShoppingListPage when the List button is tapped
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ShoppingList()),
-      );
+      // Check if ShoppingList page is already in the navigation stack
+      bool shoppingListPageFound = false;
+      Navigator.of(context).popUntil((route) {
+        if (route.settings.name == ShoppingList().toString()) {
+          shoppingListPageFound = true;
+          return true;
+        }
+        return false;
+      });
+
+      if (!shoppingListPageFound) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ShoppingList()),
+        );
+      }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
       "Saturday",
       "Sunday"
     ];
-    print(" heeeere " + buttonIndex.toString());
+    //print(" heeeere " + buttonIndex.toString());
     if (buttonIndex < 0 || buttonIndex >= weekdays.length) {
       return SizedBox();
     }
