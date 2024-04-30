@@ -18,8 +18,8 @@ class _InstructionPageState extends State<InstructionPage> {
   Recipe recipe = Recipe({});
 
   Future<void> fetchRandomRecipes() async {
-    //const String apiKey = '91656d4b1aa54efc824aaf5ba4192025';
-    const String apiKey = '560efc17aa5a4eca95183945809e1f6a';
+    const String apiKey = '91656d4b1aa54efc824aaf5ba4192025';
+    //const String apiKey = '560efc17aa5a4eca95183945809e1f6a';
     const String apiUrl = 'https://api.spoonacular.com/recipes/random';
     const int number = 1; // Number of random recipes to retrieve
 
@@ -56,7 +56,8 @@ class _InstructionPageState extends State<InstructionPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          } else
+            if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             List<Ingredient> ingredientsList = [];

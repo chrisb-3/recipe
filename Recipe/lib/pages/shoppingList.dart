@@ -3,6 +3,8 @@ import 'package:learn/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
+import 'package:learn/DB/database.dart';
+
 
 class ShoppingList extends StatefulWidget {
   const ShoppingList({Key? key});
@@ -23,12 +25,21 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
     'Milk',
     'Bread',
     'Eggs',
-    'Cheese',
-    'Yogurt',
+    'Bread',
+    'Eggs'
   ];
 
-  // Initialize the checked items list with the saved state
-  late List<bool> _checkedItems;
+  late List<bool> _checkedItems; // list of checkboxes
+  late Database _database;
+
+
+
+  //method to get the correct ingredients and the amount that has to be bought for the week
+  void setItemsList(){
+    //get data from database
+
+    //put items in _items
+  }
 
   @override
   void didChangeDependencies() {
@@ -40,24 +51,39 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
   void initState() {
     super.initState();
     // Initialize the checked items list with all false values
-    _checkedItems = List<bool>.filled(_items.length, false);
+    _checkedItems = List<bool>.filled(_items.length, false); //make them all false at first
     // Load the saved checked state from shared preferences
     _loadCheckedState();
+    _openDatabase();
+  }
+
+  Future<void> _openDatabase() async {
+    _database = await DBHelper.database;
   }
 
   // Load the saved checked state from shared preferences
   void _loadCheckedState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? savedCheckedItemsJson = prefs.getString(_checkedItemsKey);
-    if (savedCheckedItemsJson != null) {
+    String? savedCheckedItemsJson = prefs.getString(_checkedItemsKey); //savedCheckedItemsJson is a list of booleans
+    print("PREF: " + savedCheckedItemsJson.toString());
+    if(savedCheckedItemsJson != null) {
       List<dynamic> savedCheckedItemsList = jsonDecode(savedCheckedItemsJson);
-      setState(() {
-        _checkedItems = savedCheckedItemsList.map((item) => item as bool).toList();
-      });
+      if(savedCheckedItemsList.length != _items.length){
+        print("HERE: " + savedCheckedItemsList.length.toString() + "     "  + savedCheckedItemsJson.length.toString() + "      "+ _items.length.toString());
+        _saveCheckedState();
+        //_checkedItems = savedCheckedItemsList.map((item) => item as bool).toList();
+      }
+      else if (savedCheckedItemsList.length == _items.length) {
+        print("ARRIVED Here");
+        List<dynamic> savedCheckedItemsList = jsonDecode(savedCheckedItemsJson);
+        setState(() {
+          _checkedItems = savedCheckedItemsList.map((item) => item as bool).toList();
+        });
+      }
     }
   }
 
-// Save the checked state to shared preferences for page navigation
+  // Save the checked state to shared preferences for page navigation
   Future<void> _saveCheckedState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String checkedItemsJson = jsonEncode(_checkedItems);
@@ -69,17 +95,28 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
     setState(() {
       _selectedIndex = index;
     });
+    _saveCheckedState();
     if (_selectedIndex == 0) {
-      _saveCheckedState();
-      print("heeeere ee");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage(title: "Weekly Overview")),
       );
-    } else if (_selectedIndex == 1) {
-      // Save the checked state before navigating back to the shopping list
-      _saveCheckedState();
-      //Navigator.pop(context); // Navigate back
+    }
+  }
+
+  void _updateCheckedItems() {
+    setState(() {
+      _checkedItems = List<bool>.filled(_items.length, false);
+    });
+    _saveCheckedState(); // Save the updated checked state
+  }
+
+
+  @override
+  void didUpdateWidget(covariant ShoppingList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if ((oldWidget.key as GlobalKey<_ShoppingListState>).currentState!._items.length != _items.length) {
+      _updateCheckedItems();
     }
   }
 
@@ -93,14 +130,20 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
         itemCount: _items.length,
         itemBuilder: (context, index) {
           return ListTile(
+            onTap: () {
+              setState(() {
+                _checkedItems[index] = !_checkedItems[index];
+              });
+            },
             title: Text(_items[index]),
             trailing: Checkbox(
-              value: _checkedItems[index],
+              value: _checkedItems[index], //the checkbox is either checked or not
               onChanged: (value) {
                 setState(() {
                   _checkedItems[index] = value!;
                 });
               },
+              activeColor: Colors.green,
             ),
             tileColor: _checkedItems[index] ? Colors.grey.shade300 : null,
           );
@@ -123,4 +166,5 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
       ),
     );
   }
+
 }
