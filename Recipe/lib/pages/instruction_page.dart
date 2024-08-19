@@ -14,7 +14,6 @@ class InstructionPage extends StatefulWidget {
 }
 
 class _InstructionPageState extends State<InstructionPage> {
-  //Recipe recipe = new Recipe(new Map());
   Recipe recipe = Recipe({});
 
   Future<void> fetchRandomRecipes() async {

@@ -3,12 +3,14 @@ import 'pages/instruction_page.dart';
 import 'pages/shoppingList.dart';
 //import 'package:provider/provider.dart';
 
+/** start rendering UI and make MyApp the base widgit */
 void main() {
   runApp(const MyApp());
 }
 
+/** Basic info of app like color theme and title*/
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key}); // constructor
 
   // This widget is the root of your application.
   @override
@@ -19,22 +21,76 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Weekly overview'),
+      home: const MyHomePage(title: 'Weekly overview'), //widget that displays when app starts
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({ //constructor
+    super.key,
+    required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState(); // return a new instance of _MyHomePageState
 }
 
+/** Manages the sate of MyHomePage
+ *  defines the build method
+ */
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Use SizedBox to set a fixed height for the ListView
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.8, // Adjust the height as needed
+                child: ListView(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  children: List.generate(7, (index) { //call the button generating function 7 times
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: buildButton(index),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_sharp),
+            label: 'Weekly Overview',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.checklist_rtl),
+            label: 'Shopping List',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -42,12 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     if (_selectedIndex == 0) {
       // Navigate to WeeklyOverviewPage when the Weekly Overview button is tapped
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => MyHomePage(title: "Weekly Overview")),
-      // );
     } else if (_selectedIndex == 1) {
-      // Check if ShoppingList page is already in the navigation stack
       bool shoppingListPageFound = false;
       Navigator.of(context).popUntil((route) {
         if (route.settings.name == ShoppingList().toString()) {
@@ -66,58 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                // Use SizedBox to set a fixed height for the ListView
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8, // Adjust the height as needed
-                  child: ListView(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    children: List.generate(7, (index) { //call the button generating function 7 times
-                      //Color buttonColor = Colors.primaries[index % Colors.primaries.length + 10];
-                      //Color buttonColor = Colors.blue;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: buildButton(index),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_sharp),
-            label: 'Weekly Overview',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.checklist_rtl),
-            label: 'List',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-
   //Generate buttons
   Widget buildButton(int buttonIndex) {
     final List<String> weekdays = [
@@ -129,7 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
       "Saturday",
       "Sunday"
     ];
-    //print(" heeeere " + buttonIndex.toString());
     if (buttonIndex < 0 || buttonIndex >= weekdays.length) {
       return SizedBox();
     }
@@ -138,13 +136,11 @@ else {
     bool isSaturday = weekdays[buttonIndex] == "Saturday";
     return ElevatedButton(
       onPressed: () {
-        //handle click
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => InstructionPage(),),);
-        Navigator.push(
+        Navigator.push( // go to the instruction page when a day is clicked
           context,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-                InstructionPage(),
+                InstructionPage(), //add the day index
             transitionsBuilder: (context, animation, secondaryAnimation,
                 child) {
               const beginOffset = Offset(1.0, 0.0);

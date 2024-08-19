@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+
 class DBHelper {
   static Database? _database;
   static const String dbName = 'shopping_list.db';

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:learn/Classes/DayRecipe.dart';
 import 'package:learn/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:learn/DB/database.dart';
+import 'package:learn/Classes/User.dart';
+import 'package:learn/DB/databaseManager.dart';
 
 
 class ShoppingList extends StatefulWidget {
@@ -24,20 +27,15 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
     'Bananas',
     'Milk',
     'Bread',
-    'Eggs',
-    'Bread',
     'Eggs'
   ];
 
   late List<bool> _checkedItems; // list of checkboxes
   late Database _database;
 
-
-
   //method to get the correct ingredients and the amount that has to be bought for the week
   void setItemsList(){
     //get data from database
-
     //put items in _items
   }
 
@@ -55,6 +53,9 @@ class _ShoppingListState extends State with WidgetsBindingObserver {
     // Load the saved checked state from shared preferences
     _loadCheckedState();
     _openDatabase();
+
+    DayRecipe rec = DayRecipe(id: 1, title: 'meal', preparation_time: 5, cooking_time: 10, imgURL: 'imgURL');
+    DatabaseManager.addRecipe(rec);
   }
 
   Future<void> _openDatabase() async {
